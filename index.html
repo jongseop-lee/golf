@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아도니스CC 임원 골프예약 현황 | 2026년 9월</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    background: #f4f6f9;
+    color: #1a2535;
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .header-left h1 { font-size: 22px; font-weight: 700; color: #1a2535; letter-spacing: -0.5px; }
+  .header-left .subtitle { font-size: 13px; color: #7a8fa6; margin-top: 4px; }
+  .badge {
+    background: linear-gradient(135deg, #1e6b45, #27ae60);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 20px;
+  }
+
+  /* ── KPI 카드 ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .kpi-card {
+    background: #fff;
+    border: 1px solid #e4eaf2;
+    border-radius: 14px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .kpi-card.green::before  { background: linear-gradient(90deg,#27ae60,#2ecc71); }
+  .kpi-card.blue::before   { background: linear-gradient(90deg,#2980b9,#3498db); }
+  .kpi-card.orange::before { background: linear-gradient(90deg,#e67e22,#f39c12); }
+  .kpi-card.purple::before { background: linear-gradient(90deg,#8e44ad,#9b59b6); }
+  .kpi-label { font-size: 11px; color: #9aabb8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .kpi-value { font-size: 34px; font-weight: 800; color: #1a2535; line-height: 1; }
+  .kpi-value span { font-size: 14px; font-weight: 500; color: #9aabb8; margin-left: 3px; }
+  .kpi-sub { font-size: 12px; color: #b0bec5; margin-top: 6px; }
+
+  /* ── 할당량 바 ── */
+  .quota-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
+  .quota-card {
+    background: #fff;
+    border: 1px solid #e4eaf2;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .quota-title { font-size: 13px; font-weight: 600; color: #4a6070; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .quota-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .quota-item:last-child { margin-bottom: 0; }
+  .quota-item-label { width: 36px; font-size: 12px; color: #9aabb8; font-weight: 600; }
+  .quota-bar-wrap { flex: 1; background: #f0f4f8; border-radius: 6px; height: 8px; overflow: hidden; }
+  .quota-bar-fill { height: 100%; border-radius: 6px; }
+  .fill-weekday { background: linear-gradient(90deg,#2980b9,#3498db); }
+  .fill-weekend { background: linear-gradient(90deg,#8e44ad,#9b59b6); }
+  .quota-nums { font-size: 12px; font-weight: 600; white-space: nowrap; color: #4a6070; }
+  .quota-nums .used { color: #1a2535; }
+  .quota-nums .total { color: #b0bec5; }
+
+  /* ── Section Title ── */
+  .section-title {
+    font-size: 13px; font-weight: 700; color: #4a6070;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: #e4eaf2; }
+
+  /* ── 캘린더 ── */
+  .calendar-wrap {
+    background: #fff;
+    border: 1px solid #e4eaf2;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid #e4eaf2; }
+  .cal-header-cell {
+    text-align: center; padding: 12px 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    color: #9aabb8; background: #f8fafc;
+  }
+  .cal-header-cell.sun { color: #e74c3c; }
+  .cal-header-cell.sat { color: #3498db; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .cal-cell {
+    min-height: 96px;
+    padding: 10px 8px;
+    border-right: 1px solid #e4eaf2;
+    border-bottom: 1px solid #e4eaf2;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .cal-cell:hover { background: #f8fafc; }
+  .cal-cell:nth-child(7n) { border-right: none; }
+  .cal-cell.empty { background: #fbfcfd; cursor: default; }
+  .cal-cell.empty:hover { background: #fbfcfd; }
+  .cal-day { font-size: 13px; font-weight: 700; color: #c0cdd8; margin-bottom: 6px; }
+  .cal-cell.active .cal-day { color: #1a2535; }
+  .cal-cell.sun .cal-day { color: #f5b7b1; }
+  .cal-cell.sat .cal-day { color: #aed6f1; }
+  .cal-cell.active.sun .cal-day { color: #e74c3c; }
+  .cal-cell.active.sat .cal-day { color: #2980b9; }
+  .cal-cell .add-btn {
+    position: absolute;
+    bottom: 6px; right: 6px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #e8f5e9;
+    color: #27ae60;
+    font-size: 15px; line-height: 20px; text-align: center;
+    font-weight: 700;
+    border: none; cursor: pointer;
+    display: none;
+    transition: background 0.15s;
+  }
+  .cal-cell:hover .add-btn { display: block; }
+  .cal-cell .add-btn:hover { background: #27ae60; color: #fff; }
+
+  .reservation-pill {
+    background: #eaf7f0;
+    border: 1px solid #a9dfbf;
+    border-radius: 7px;
+    padding: 5px 8px;
+    margin-bottom: 4px;
+    position: relative;
+    cursor: default;
+  }
+  .reservation-pill:hover .pill-actions { display: flex; }
+  .res-time { font-size: 10px; color: #1e8449; font-weight: 700; }
+  .res-name { font-size: 11px; color: #1a5e34; font-weight: 600; margin-top: 1px; }
+  .pill-actions {
+    display: none;
+    position: absolute;
+    top: 4px; right: 4px;
+    gap: 3px;
+  }
+  .pill-btn {
+    width: 18px; height: 18px;
+    border: none; border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px; line-height: 18px; text-align: center;
+    font-weight: 700;
+  }
+  .pill-edit { background: #d5e8f7; color: #1a6fa8; }
+  .pill-edit:hover { background: #1a6fa8; color: #fff; }
+  .pill-del  { background: #fde8e8; color: #c0392b; }
+  .pill-del:hover  { background: #c0392b; color: #fff; }
+
+  /* ── 추석 연휴 ── */
+  .cal-cell.chuseok {
+    background: #fff5f5;
+  }
+  .cal-cell.chuseok:hover { background: #ffeded; }
+  .cal-cell.chuseok .cal-day { color: #c0392b !important; }
+  .chuseok-label {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: #e74c3c;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── 예약 목록 테이블 ── */
+  .list-wrap { background: #fff; border: 1px solid #e4eaf2; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .list-table { width: 100%; border-collapse: collapse; }
+  .list-table thead tr { background: #f8fafc; }
+  .list-table th { padding: 12px 18px; text-align: left; font-size: 11px; font-weight: 700; color: #9aabb8; letter-spacing: 0.6px; text-transform: uppercase; border-bottom: 1px solid #e4eaf2; }
+  .list-table td { padding: 12px 18px; font-size: 13px; color: #3a4f60; border-bottom: 1px solid #f0f4f8; }
+  .list-table tbody tr:last-child td { border-bottom: none; }
+  .list-table tbody tr:hover td { background: #f8fafc; }
+  .type-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 10px; letter-spacing: 0.3px; }
+  .type-weekday { background: #dbeeff; color: #1a6fa8; border: 1px solid #b3d9f5; }
+  .type-weekend { background: #ede8f7; color: #6c3483; border: 1px solid #d2bdf0; }
+  .time-chip { font-size: 12px; font-weight: 700; color: #1e8449; }
+  .row-del-btn { background: #fde8e8; color: #c0392b; border: none; border-radius: 6px; padding: 3px 9px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .row-del-btn:hover { background: #c0392b; color: #fff; }
+  .row-edit-btn { background: #d5e8f7; color: #1a6fa8; border: none; border-radius: 6px; padding: 3px 9px; font-size: 11px; font-weight: 700; cursor: pointer; margin-right: 4px; }
+  .row-edit-btn:hover { background: #1a6fa8; color: #fff; }
+
+  /* ── 모달 ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 30px;
+    width: 360px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
+  .modal h3 { font-size: 16px; font-weight: 700; color: #1a2535; margin-bottom: 20px; }
+  .modal label { display: block; font-size: 12px; font-weight: 600; color: #7a8fa6; margin-bottom: 5px; }
+  .modal input, .modal select {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid #d8e4ee;
+    border-radius: 8px;
+    font-size: 14px; color: #1a2535;
+    margin-bottom: 14px;
+    outline: none;
+    font-family: inherit;
+  }
+  .modal input:focus, .modal select:focus { border-color: #27ae60; }
+  .modal-hint { font-size: 11px; color: #aab; margin-top: -10px; margin-bottom: 14px; }
+  .modal-btns { display: flex; gap: 8px; margin-top: 4px; }
+  .btn-save { flex: 1; background: #27ae60; color: #fff; border: none; border-radius: 9px; padding: 11px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn-save:hover { background: #1e8449; }
+  .btn-cancel { flex: 1; background: #f0f4f8; color: #4a6070; border: none; border-radius: 9px; padding: 11px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn-cancel:hover { background: #e0e8f0; }
+
+  @media (max-width: 900px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .quota-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <h1>⛳ 아도니스CC 임원 골프예약 현황</h1>
+    <div class="subtitle">2026년 9월 · 캘린더 셀 클릭으로 예약 추가 · 예약 카드 hover → 수정/삭제</div>
+  </div>
+  <div class="badge">2026. 09</div>
+</div>
+
+<!-- KPI 카드 -->
+<div class="kpi-row">
+  <div class="kpi-card green">
+    <div class="kpi-label">총 예약 횟수</div>
+    <div class="kpi-value" id="kpi-total">9 <span>건</span></div>
+    <div class="kpi-sub" id="kpi-sub">주중 5건 · 주말 4건</div>
+  </div>
+  <div class="kpi-card blue">
+    <div class="kpi-label">주중 잔여 횟수</div>
+    <div class="kpi-value" id="kpi-wd-remain">— <span>회</span></div>
+    <div class="kpi-sub" id="kpi-wd-sub">한도 7회</div>
+  </div>
+  <div class="kpi-card orange">
+    <div class="kpi-label">주말 잔여 횟수</div>
+    <div class="kpi-value" id="kpi-we-remain">— <span>회</span></div>
+    <div class="kpi-sub" id="kpi-we-sub">한도 5회</div>
+  </div>
+  <div class="kpi-card purple">
+    <div class="kpi-label">이번달 남은 일수</div>
+    <div class="kpi-value">24 <span>일</span></div>
+    <div class="kpi-sub">9월 30일까지</div>
+  </div>
+</div>
+
+<!-- 할당량 -->
+<div class="quota-row">
+  <div class="quota-card">
+    <div class="quota-title"><span class="dot" style="background:#27ae60"></span>예약 한도 사용 현황</div>
+    <div class="quota-item">
+      <div class="quota-item-label">주중</div>
+      <div class="quota-bar-wrap"><div class="quota-bar-fill fill-weekday" id="bar-wd" style="width:0%"></div></div>
+      <div class="quota-nums" id="nums-wd"><span class="used">-</span><span class="total"> / 7회</span></div>
+    </div>
+    <div class="quota-item">
+      <div class="quota-item-label">주말</div>
+      <div class="quota-bar-wrap"><div class="quota-bar-fill fill-weekend" id="bar-we" style="width:0%"></div></div>
+      <div class="quota-nums" id="nums-we"><span class="used">-</span><span class="total"> / 5회</span></div>
+    </div>
+  </div>
+  <div class="quota-card">
+    <div class="quota-title"><span class="dot" style="background:#e67e22"></span>잔여 한도</div>
+    <div style="display:flex; gap:24px; align-items:center; padding-top:8px;">
+      <div style="text-align:center; flex:1;">
+        <div style="font-size:11px;color:#9aabb8;margin-bottom:4px;">주중 잔여</div>
+        <div style="font-size:38px;font-weight:800;color:#2980b9;" id="remain-wd">—</div>
+        <div style="font-size:11px;color:#9aabb8;margin-top:2px;">회 남음</div>
+      </div>
+      <div style="width:1px;height:60px;background:#e4eaf2;"></div>
+      <div style="text-align:center; flex:1;">
+        <div style="font-size:11px;color:#9aabb8;margin-bottom:4px;">주말 잔여</div>
+        <div style="font-size:38px;font-weight:800;color:#8e44ad;" id="remain-we">—</div>
+        <div style="font-size:11px;color:#9aabb8;margin-top:2px;">회 남음</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 캘린더 -->
+<div class="section-title">9월 캘린더 · 예약 현황</div>
+<div class="calendar-wrap">
+  <div class="cal-header">
+    <div class="cal-header-cell sun">일</div>
+    <div class="cal-header-cell">월</div>
+    <div class="cal-header-cell">화</div>
+    <div class="cal-header-cell">수</div>
+    <div class="cal-header-cell">목</div>
+    <div class="cal-header-cell">금</div>
+    <div class="cal-header-cell sat">토</div>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+</div>
+
+<!-- 예약 목록 -->
+<div class="section-title">예약 상세 목록</div>
+<div class="list-wrap">
+  <table class="list-table">
+    <thead>
+      <tr>
+        <th>#</th><th>날짜</th><th>요일</th><th>구분</th><th>티타임</th><th>예약자</th><th>관리</th>
+      </tr>
+    </thead>
+    <tbody id="list-body"></tbody>
+  </table>
+</div>
+
+<div style="text-align:right; font-size:11px; color:#c0cdd8; margin-top:18px;">
+  아도니스CC 임원 전용 골프예약 시스템 · 2026년 9월
+</div>
+
+<!-- 모달 -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3 id="modal-title">예약 추가</h3>
+    <input type="hidden" id="modal-id">
+    <label>날짜</label>
+    <input type="text" id="modal-date" readonly style="background:#f8fafc; color:#9aabb8;">
+    <label>티타임 (예: 8시 27분)</label>
+    <input type="text" id="modal-time" placeholder="예) 8시 27분 또는 8:27">
+    <div class="modal-hint">자유롭게 입력하세요 — 8:30, 08시 30분, 오전 9시 등</div>
+    <label>예약자</label>
+    <input type="text" id="modal-name" placeholder="예) 유성완">
+    <label>구분</label>
+    <select id="modal-type">
+      <option value="weekday">주중</option>
+      <option value="weekend">주말</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" onclick="saveReservation()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 데이터 ──────────────────────────────────────────────
+const WEEKDAY_LIMIT = 7;
+const WEEKEND_LIMIT = 5;
+const DAY_NAMES = ['일','월','화','수','목','금','토'];
+
+let reservations = [
+  { id: 1,  day: 7,  time: '8시 00분',  name: '유성완', type: 'weekday' },
+  { id: 2,  day: 8,  time: '8시 00분',  name: '유성완', type: 'weekday' },
+  { id: 3,  day: 13, time: '11시 00분', name: '유성완', type: 'weekend' },
+  { id: 4,  day: 16, time: '7시 00분',  name: '유성완', type: 'weekday' },
+  { id: 5,  day: 19, time: '8시 00분',  name: '유성완', type: 'weekend' },
+  { id: 6,  day: 20, time: '8시 00분',  name: '유성완', type: 'weekend' },
+  { id: 7,  day: 21, time: '8시 00분',  name: '유성완', type: 'weekday' },
+  { id: 8,  day: 27, time: '8시 00분',  name: '유성완', type: 'weekend' },
+  { id: 9,  day: 30, time: '12시 00분', name: '유성완', type: 'weekday' },
+];
+let nextId = 10;
+
+// 2026년 추석 연휴: 9월 24~27일
+const CHUSEOK_DAYS = [24, 25, 26, 27];
+
+// 2026년 9월 1일 = 화요일(2)
+function getDayOfWeek(day) {
+  const d = new Date(2026, 8, day);
+  return d.getDay(); // 0=일,1=월,...,6=토
+}
+
+// ── 캘린더 렌더 ──────────────────────────────────────────
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  // 9월 1일 = 화요일 → 앞에 2칸 비움
+  const firstDow = getDayOfWeek(1); // 2
+  for (let i = 0; i < firstDow; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-cell empty';
+    grid.appendChild(empty);
+  }
+
+  for (let day = 1; day <= 30; day++) {
+    const dow = getDayOfWeek(day);
+    const dayRes = reservations.filter(r => r.day === day);
+
+    const cell = document.createElement('div');
+    const isChuseok = CHUSEOK_DAYS.includes(day);
+    let cls = 'cal-cell active';
+    if (dow === 0) cls += ' sun';
+    if (dow === 6) cls += ' sat';
+    if (isChuseok) cls += ' chuseok';
+    cell.className = cls;
+    cell.dataset.day = day;
+
+    // 추석 라벨
+    if (isChuseok) {
+      const label = document.createElement('div');
+      label.className = 'chuseok-label';
+      label.textContent = day === 25 ? '추석' : '추석연휴';
+      cell.appendChild(label);
+    }
+
+    const dayNum = document.createElement('div');
+    dayNum.className = 'cal-day';
+    dayNum.textContent = day;
+    cell.appendChild(dayNum);
+
+    dayRes.forEach(r => {
+      const pill = document.createElement('div');
+      pill.className = 'reservation-pill';
+      pill.innerHTML = `
+        <div class="res-time">${r.time}</div>
+        <div class="res-name">${r.name}</div>
+        <div class="pill-actions">
+          <button class="pill-btn pill-edit" onclick="openEdit(event,${r.id})">✎</button>
+          <button class="pill-btn pill-del"  onclick="deleteRes(event,${r.id})">✕</button>
+        </div>`;
+      cell.appendChild(pill);
+    });
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-btn';
+    addBtn.textContent = '+';
+    addBtn.onclick = (e) => { e.stopPropagation(); openAdd(day); };
+    cell.appendChild(addBtn);
+
+    cell.addEventListener('click', () => openAdd(day));
+    grid.appendChild(cell);
+  }
+
+  // 남은 칸 채우기
+  const total = firstDow + 30;
+  const remainder = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 0; i < remainder; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-cell empty';
+    grid.appendChild(empty);
+  }
+}
+
+// ── 목록 렌더 ──────────────────────────────────────────
+function renderList() {
+  const tbody = document.getElementById('list-body');
+  const sorted = [...reservations].sort((a, b) => a.day - b.day);
+  tbody.innerHTML = sorted.map((r, i) => {
+    const dow = getDayOfWeek(r.day);
+    const dowName = DAY_NAMES[dow];
+    const isSun = dow === 0, isSat = dow === 6;
+    const dowColor = isSun ? '#e74c3c' : isSat ? '#2980b9' : '#3a4f60';
+    const typeBadge = r.type === 'weekday'
+      ? '<span class="type-badge type-weekday">주중</span>'
+      : '<span class="type-badge type-weekend">주말</span>';
+    return `<tr>
+      <td style="color:#b0bec5">${String(i+1).padStart(2,'0')}</td>
+      <td>9월 ${r.day}일</td>
+      <td style="color:${dowColor};font-weight:700">${dowName}</td>
+      <td>${typeBadge}</td>
+      <td><span class="time-chip">${r.time}</span></td>
+      <td>${r.name}</td>
+      <td>
+        <button class="row-edit-btn" onclick="openEdit(event,${r.id})">수정</button>
+        <button class="row-del-btn"  onclick="deleteRes(event,${r.id})">삭제</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── KPI 업데이트 ────────────────────────────────────────
+function updateKPI() {
+  const wdCount = reservations.filter(r => r.type === 'weekday').length;
+  const weCount = reservations.filter(r => r.type === 'weekend').length;
+  const total   = reservations.length;
+  const wdRemain = Math.max(0, WEEKDAY_LIMIT - wdCount);
+  const weRemain = Math.max(0, WEEKEND_LIMIT - weCount);
+
+  document.getElementById('kpi-total').innerHTML     = `${total} <span>건</span>`;
+  document.getElementById('kpi-sub').textContent     = `주중 ${wdCount}건 · 주말 ${weCount}건`;
+  document.getElementById('kpi-wd-remain').innerHTML = `${wdRemain} <span>회</span>`;
+  document.getElementById('kpi-wd-sub').textContent  = `한도 ${WEEKDAY_LIMIT}회 중 ${wdCount}회 사용`;
+  document.getElementById('kpi-we-remain').innerHTML = `${weRemain} <span>회</span>`;
+  document.getElementById('kpi-we-sub').textContent  = `한도 ${WEEKEND_LIMIT}회 중 ${weCount}회 사용`;
+  document.getElementById('remain-wd').textContent   = wdRemain;
+  document.getElementById('remain-we').textContent   = weRemain;
+
+  const wdPct = Math.min(100, (wdCount / WEEKDAY_LIMIT) * 100);
+  const wePct = Math.min(100, (weCount / WEEKEND_LIMIT) * 100);
+  document.getElementById('bar-wd').style.width = wdPct + '%';
+  document.getElementById('bar-we').style.width = wePct + '%';
+  document.getElementById('nums-wd').innerHTML = `<span class="used">${wdCount}</span><span class="total"> / ${WEEKDAY_LIMIT}회</span>`;
+  document.getElementById('nums-we').innerHTML = `<span class="used">${weCount}</span><span class="total"> / ${WEEKEND_LIMIT}회</span>`;
+}
+
+function renderAll() {
+  renderCalendar();
+  renderList();
+  updateKPI();
+}
+
+// ── 모달 ────────────────────────────────────────────────
+let editingId = null;
+
+function openAdd(day) {
+  editingId = null;
+  const dow = getDayOfWeek(day);
+  const isWeekend = dow === 0 || dow === 6;
+  document.getElementById('modal-title').textContent = `9월 ${day}일 예약 추가`;
+  document.getElementById('modal-id').value = '';
+  document.getElementById('modal-date').value = `2026년 9월 ${day}일 (${DAY_NAMES[dow]})`;
+  document.getElementById('modal-time').value = '';
+  document.getElementById('modal-name').value = '';
+  document.getElementById('modal-type').value = isWeekend ? 'weekend' : 'weekday';
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('modal-time').focus(), 100);
+}
+
+function openEdit(e, id) {
+  e.stopPropagation();
+  editingId = id;
+  const r = reservations.find(r => r.id === id);
+  const dow = getDayOfWeek(r.day);
+  document.getElementById('modal-title').textContent = `9월 ${r.day}일 예약 수정`;
+  document.getElementById('modal-id').value = id;
+  document.getElementById('modal-date').value = `2026년 9월 ${r.day}일 (${DAY_NAMES[dow]})`;
+  document.getElementById('modal-time').value = r.time;
+  document.getElementById('modal-name').value = r.name;
+  document.getElementById('modal-type').value = r.type;
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('modal-time').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+
+function saveReservation() {
+  const time = document.getElementById('modal-time').value.trim();
+  const name = document.getElementById('modal-name').value.trim();
+  const type = document.getElementById('modal-type').value;
+  const dateStr = document.getElementById('modal-date').value;
+
+  if (!time || !name) { alert('티타임과 예약자를 입력해 주세요.'); return; }
+
+  // 날짜에서 day 추출
+  const dayMatch = dateStr.match(/9월\s*(\d+)일/);
+  if (!dayMatch) return;
+  const day = parseInt(dayMatch[1]);
+
+  if (editingId !== null) {
+    const idx = reservations.findIndex(r => r.id === editingId);
+    if (idx !== -1) reservations[idx] = { ...reservations[idx], time, name, type };
+  } else {
+    reservations.push({ id: nextId++, day, time, name, type });
+  }
+
+  closeModal();
+  renderAll();
+}
+
+function deleteRes(e, id) {
+  e.stopPropagation();
+  if (!confirm('이 예약을 삭제하시겠습니까?')) return;
+  reservations = reservations.filter(r => r.id !== id);
+  renderAll();
+}
+
+// 모달 외부 클릭 닫기
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Enter 키로 저장
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && document.getElementById('modal-overlay').classList.contains('open')) {
+    saveReservation();
+  }
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── 초기 렌더 ───────────────────────────────────────────
+renderAll();
+</script>
+</body>
+</html>
