@@ -283,7 +283,9 @@
 const EMAILJS_PUBLIC_KEY  = '5FlGFACDCHqMGjxW0';
 const EMAILJS_SERVICE_ID  = 'leejsman';
 const EMAILJS_TEMPLATE_ID = 'template_64nyz4c';
-const EMAIL_MANAGER   = 'leejsman@gmail.com';
+const EMAIL_FROM_NAME = '이종섭';
+const EMAIL_FROM      = 'leejsman@gmail.com';
+const EMAIL_TO_NAME   = '유성완';
 const EMAIL_RECIPIENT = 'ysw@hecto.co.kr';
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
@@ -300,7 +302,9 @@ async function sendNotification(action, r) {
     name: r.name || '-',
     type_label: typeLabel,
     page_url: 'https://jongseop-lee.github.io/golf',
-    email: EMAIL_MANAGER,
+    from_name: EMAIL_FROM_NAME,
+    from_email: EMAIL_FROM,
+    to_name: EMAIL_TO_NAME,
   };
   try {
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { ...params, to_email: EMAIL_RECIPIENT });
