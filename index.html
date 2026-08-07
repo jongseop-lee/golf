@@ -303,7 +303,6 @@ async function sendNotification(action, r) {
     email: EMAIL_MANAGER,
   };
   try {
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { ...params, to_email: EMAIL_MANAGER });
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { ...params, to_email: EMAIL_RECIPIENT });
   } catch(e) {
     console.warn('이메일 발송 실패:', e);
