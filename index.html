@@ -52,8 +52,9 @@
   .quota-item-label { width: 32px; font-size: 11px; color: #9aabb8; font-weight: 600; }
   .quota-bar-wrap { flex: 1; background: #f0f4f8; border-radius: 6px; height: 7px; overflow: hidden; }
   .quota-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s; }
-  .fill-weekday { background: linear-gradient(90deg,#2980b9,#3498db); }
-  .fill-weekend { background: linear-gradient(90deg,#8e44ad,#9b59b6); }
+  .fill-weekday  { background: linear-gradient(90deg,#2980b9,#3498db); }
+  .fill-saturday { background: linear-gradient(90deg,#16a085,#1abc9c); }
+  .fill-sunday   { background: linear-gradient(90deg,#c0392b,#e74c3c); }
   .quota-nums { font-size: 11px; font-weight: 600; white-space: nowrap; }
   .quota-nums .used { color: #1a2535; } .quota-nums .total { color: #b0bec5; }
 
@@ -104,8 +105,9 @@
   .list-table tbody tr:last-child td { border-bottom: none; }
   .list-table tbody tr:hover td { background: #f8fafc; }
   .type-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
-  .type-weekday { background: #dbeeff; color: #1a6fa8; border: 1px solid #b3d9f5; }
-  .type-weekend { background: #ede8f7; color: #6c3483; border: 1px solid #d2bdf0; }
+  .type-weekday  { background: #dbeeff; color: #1a6fa8; border: 1px solid #b3d9f5; }
+  .type-saturday { background: #d5f5ef; color: #0e6655; border: 1px solid #a2ddd4; }
+  .type-sunday   { background: #fde8e8; color: #c0392b; border: 1px solid #f5b7b1; }
   .time-chip { font-size: 11px; font-weight: 700; color: #1e8449; }
   .row-del-btn  { background: #fde8e8; color: #c0392b; border: none; border-radius: 5px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; }
   .row-del-btn:hover  { background: #c0392b; color: #fff; }
@@ -165,19 +167,19 @@
     <div class="kpi-sub" id="kpi-sub">로딩 중...</div>
   </div>
   <div class="kpi-card blue">
-    <div class="kpi-label">주중 잔여</div>
+    <div class="kpi-label">주중 잔여 (한도 7)</div>
     <div class="kpi-value" id="kpi-wd-remain">— <span>회</span></div>
     <div class="kpi-sub" id="kpi-wd-sub">한도 7회</div>
   </div>
   <div class="kpi-card orange">
-    <div class="kpi-label">주말 잔여</div>
-    <div class="kpi-value" id="kpi-we-remain">— <span>회</span></div>
-    <div class="kpi-sub" id="kpi-we-sub">한도 5회</div>
+    <div class="kpi-label">토요일 잔여 (한도 2)</div>
+    <div class="kpi-value" id="kpi-sat-remain">— <span>회</span></div>
+    <div class="kpi-sub" id="kpi-sat-sub">한도 2회</div>
   </div>
   <div class="kpi-card purple">
-    <div class="kpi-label">남은 일수</div>
-    <div class="kpi-value" id="kpi-remain-days">— <span>일</span></div>
-    <div class="kpi-sub" id="kpi-remain-sub">이번달 기준</div>
+    <div class="kpi-label">일요일/공휴일 잔여 (한도 3)</div>
+    <div class="kpi-value" id="kpi-sun-remain">— <span>회</span></div>
+    <div class="kpi-sub" id="kpi-sun-sub">한도 3회</div>
   </div>
 </div>
 
@@ -191,23 +193,34 @@
       <div class="quota-nums" id="nums-wd"><span class="used">-</span><span class="total"> / 7회</span></div>
     </div>
     <div class="quota-item">
-      <div class="quota-item-label">주말</div>
-      <div class="quota-bar-wrap"><div class="quota-bar-fill fill-weekend" id="bar-we" style="width:0%"></div></div>
-      <div class="quota-nums" id="nums-we"><span class="used">-</span><span class="total"> / 5회</span></div>
+      <div class="quota-item-label">토요일</div>
+      <div class="quota-bar-wrap"><div class="quota-bar-fill fill-saturday" id="bar-sat" style="width:0%"></div></div>
+      <div class="quota-nums" id="nums-sat"><span class="used">-</span><span class="total"> / 2회</span></div>
+    </div>
+    <div class="quota-item">
+      <div class="quota-item-label">일/공휴</div>
+      <div class="quota-bar-wrap"><div class="quota-bar-fill fill-sunday" id="bar-sun" style="width:0%"></div></div>
+      <div class="quota-nums" id="nums-sun"><span class="used">-</span><span class="total"> / 3회</span></div>
     </div>
   </div>
   <div class="quota-card">
     <div class="quota-title"><span class="dot" style="background:#e67e22"></span>잔여 한도</div>
-    <div style="display:flex; gap:24px; align-items:center; padding-top:6px;">
+    <div style="display:flex; gap:12px; align-items:center; padding-top:6px;">
       <div style="text-align:center; flex:1;">
-        <div style="font-size:10px;color:#9aabb8;margin-bottom:3px;">주중 잔여</div>
-        <div style="font-size:34px;font-weight:800;color:#2980b9;" id="remain-wd">—</div>
+        <div style="font-size:10px;color:#9aabb8;margin-bottom:3px;">주중</div>
+        <div style="font-size:30px;font-weight:800;color:#2980b9;" id="remain-wd">—</div>
         <div style="font-size:10px;color:#9aabb8;margin-top:2px;">회 남음</div>
       </div>
       <div style="width:1px;height:50px;background:#e4eaf2;"></div>
       <div style="text-align:center; flex:1;">
-        <div style="font-size:10px;color:#9aabb8;margin-bottom:3px;">주말 잔여</div>
-        <div style="font-size:34px;font-weight:800;color:#8e44ad;" id="remain-we">—</div>
+        <div style="font-size:10px;color:#9aabb8;margin-bottom:3px;">토요일</div>
+        <div style="font-size:30px;font-weight:800;color:#16a085;" id="remain-sat">—</div>
+        <div style="font-size:10px;color:#9aabb8;margin-top:2px;">회 남음</div>
+      </div>
+      <div style="width:1px;height:50px;background:#e4eaf2;"></div>
+      <div style="text-align:center; flex:1;">
+        <div style="font-size:10px;color:#9aabb8;margin-bottom:3px;">일/공휴일</div>
+        <div style="font-size:30px;font-weight:800;color:#e74c3c;" id="remain-sun">—</div>
         <div style="font-size:10px;color:#9aabb8;margin-top:2px;">회 남음</div>
       </div>
     </div>
@@ -253,8 +266,9 @@
     <input type="text" id="modal-name" placeholder="예) 유성완">
     <label>구분</label>
     <select id="modal-type">
-      <option value="weekday">주중</option>
-      <option value="weekend">주말</option>
+      <option value="weekday">주중 (월~금)</option>
+      <option value="saturday">토요일</option>
+      <option value="sunday">일요일 / 공휴일</option>
     </select>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">취소</button>
@@ -284,7 +298,7 @@ let editingId = null;
 let pendingDay = null;
 
 // ── 상수 ─────────────────────────────────────────────────
-const WD_LIMIT = 7, WE_LIMIT = 5;
+const WD_LIMIT = 7, SAT_LIMIT = 2, SUN_LIMIT = 3;
 const DAY_KR = ['일','월','화','수','목','금','토'];
 const MONTH_KR = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 
@@ -455,9 +469,9 @@ function renderList() {
   tbody.innerHTML = [...reservations].sort((a,b)=>a.day-b.day).map((r,i) => {
     const dow = getDow(year, month, r.day);
     const dc = dow===0?'#e74c3c':dow===6?'#2980b9':'#3a4f60';
-    const tb = r.type==='weekday'
-      ? '<span class="type-badge type-weekday">주중</span>'
-      : '<span class="type-badge type-weekend">주말</span>';
+    const tb = r.type==='weekday'  ? '<span class="type-badge type-weekday">주중</span>'
+             : r.type==='saturday' ? '<span class="type-badge type-saturday">토요일</span>'
+             :                       '<span class="type-badge type-sunday">일/공휴일</span>';
     return `<tr>
       <td style="color:#b0bec5">${String(i+1).padStart(2,'0')}</td>
       <td>${month}월 ${r.day}일</td>
@@ -476,33 +490,30 @@ function renderList() {
 // ── KPI ──────────────────────────────────────────────────
 function updateKPI() {
   const { year, month } = MONTHS[curIdx];
-  const wdC = reservations.filter(r=>r.type==='weekday').length;
-  const weC = reservations.filter(r=>r.type==='weekend').length;
-  const wdR = Math.max(0, WD_LIMIT - wdC);
-  const weR = Math.max(0, WE_LIMIT - weC);
-  const today = new Date();
-  const days = daysInMonth(year, month);
-  let remaining = 0;
-  if (today.getFullYear()===year && today.getMonth()+1===month) {
-    remaining = days - today.getDate();
-  } else if (new Date(year, month-1, 1) > today) {
-    remaining = days;
-  }
+  const wdC  = reservations.filter(r=>r.type==='weekday').length;
+  const satC = reservations.filter(r=>r.type==='saturday').length;
+  const sunC = reservations.filter(r=>r.type==='sunday').length;
+  const wdR  = Math.max(0, WD_LIMIT  - wdC);
+  const satR = Math.max(0, SAT_LIMIT - satC);
+  const sunR = Math.max(0, SUN_LIMIT - sunC);
 
-  document.getElementById('kpi-total').innerHTML     = `${reservations.length} <span>건</span>`;
-  document.getElementById('kpi-sub').textContent     = `주중 ${wdC}건 · 주말 ${weC}건`;
-  document.getElementById('kpi-wd-remain').innerHTML = `${wdR} <span>회</span>`;
-  document.getElementById('kpi-wd-sub').textContent  = `한도 ${WD_LIMIT}회 중 ${wdC}회 사용`;
-  document.getElementById('kpi-we-remain').innerHTML = `${weR} <span>회</span>`;
-  document.getElementById('kpi-we-sub').textContent  = `한도 ${WE_LIMIT}회 중 ${weC}회 사용`;
-  document.getElementById('kpi-remain-days').innerHTML = `${remaining} <span>일</span>`;
-  document.getElementById('kpi-remain-sub').textContent = `${month}월 ${days}일까지`;
-  document.getElementById('remain-wd').textContent   = wdR;
-  document.getElementById('remain-we').textContent   = weR;
-  document.getElementById('bar-wd').style.width = Math.min(100,(wdC/WD_LIMIT)*100)+'%';
-  document.getElementById('bar-we').style.width = Math.min(100,(weC/WE_LIMIT)*100)+'%';
-  document.getElementById('nums-wd').innerHTML = `<span class="used">${wdC}</span><span class="total"> / ${WD_LIMIT}회</span>`;
-  document.getElementById('nums-we').innerHTML = `<span class="used">${weC}</span><span class="total"> / ${WE_LIMIT}회</span>`;
+  document.getElementById('kpi-total').innerHTML      = `${reservations.length} <span>건</span>`;
+  document.getElementById('kpi-sub').textContent      = `주중 ${wdC}건 · 토 ${satC}건 · 일/공휴 ${sunC}건`;
+  document.getElementById('kpi-wd-remain').innerHTML  = `${wdR} <span>회</span>`;
+  document.getElementById('kpi-wd-sub').textContent   = `한도 ${WD_LIMIT}회 중 ${wdC}회 사용`;
+  document.getElementById('kpi-sat-remain').innerHTML = `${satR} <span>회</span>`;
+  document.getElementById('kpi-sat-sub').textContent  = `한도 ${SAT_LIMIT}회 중 ${satC}회 사용`;
+  document.getElementById('kpi-sun-remain').innerHTML = `${sunR} <span>회</span>`;
+  document.getElementById('kpi-sun-sub').textContent  = `한도 ${SUN_LIMIT}회 중 ${sunC}회 사용`;
+  document.getElementById('remain-wd').textContent    = wdR;
+  document.getElementById('remain-sat').textContent   = satR;
+  document.getElementById('remain-sun').textContent   = sunR;
+  document.getElementById('bar-wd').style.width  = Math.min(100,(wdC/WD_LIMIT)*100)+'%';
+  document.getElementById('bar-sat').style.width = Math.min(100,(satC/SAT_LIMIT)*100)+'%';
+  document.getElementById('bar-sun').style.width = Math.min(100,(sunC/SUN_LIMIT)*100)+'%';
+  document.getElementById('nums-wd').innerHTML  = `<span class="used">${wdC}</span><span class="total"> / ${WD_LIMIT}회</span>`;
+  document.getElementById('nums-sat').innerHTML = `<span class="used">${satC}</span><span class="total"> / ${SAT_LIMIT}회</span>`;
+  document.getElementById('nums-sun').innerHTML = `<span class="used">${sunC}</span><span class="total"> / ${SUN_LIMIT}회</span>`;
 }
 
 function renderAll() { renderCalendar(); renderList(); updateKPI(); }
@@ -516,7 +527,9 @@ function openAdd(day) {
   document.getElementById('modal-date').value = `${year}년 ${month}월 ${day}일 (${DAY_KR[dow]})`;
   document.getElementById('modal-time').value = '';
   document.getElementById('modal-name').value = '';
-  document.getElementById('modal-type').value = (dow===0||dow===6)?'weekend':'weekday';
+  // 토요일 → saturday, 일요일/공휴일 → sunday, 나머지 → weekday
+  const isHoliday = !!getHoliday(year, month, day);
+  document.getElementById('modal-type').value = dow===6 ? 'saturday' : (dow===0||isHoliday) ? 'sunday' : 'weekday';
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(() => document.getElementById('modal-time').focus(), 80);
 }
