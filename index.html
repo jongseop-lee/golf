@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>아도니스CC 임원 골프예약 현황</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #f4f6f9; color: #1a2535; min-height: 100vh; padding: 28px 24px; }
@@ -278,6 +279,37 @@
 </div>
 
 <script>
+// ── EmailJS 설정 ──────────────────────────────────────────
+const EMAILJS_PUBLIC_KEY  = '5FIGFACDCHqMGjxW0';
+const EMAILJS_SERVICE_ID  = 'leejsman';
+const EMAILJS_TEMPLATE_ID = 'template_64nyz4c';
+const EMAIL_MANAGER   = 'leejsman@gmail.com';
+const EMAIL_RECIPIENT = 'ysw@hecto.co.kr';
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+async function sendNotification(action, r) {
+  const { year, month } = MONTHS[curIdx];
+  const dow = getDow(year, month, r.day);
+  const typeLabel = r.type==='weekday' ? '주중' : r.type==='saturday' ? '토요일' : '일요일/공휴일';
+  const params = {
+    action,
+    month,
+    day: r.day,
+    dow: DAY_KR[dow],
+    time: r.time || '-',
+    name: r.name || '-',
+    type_label: typeLabel,
+    page_url: 'https://jongseop-lee.github.io/golf',
+    email: EMAIL_MANAGER,
+  };
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { ...params, to_email: EMAIL_MANAGER });
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { ...params, to_email: EMAIL_RECIPIENT });
+  } catch(e) {
+    console.warn('이메일 발송 실패:', e);
+  }
+}
+
 // ── Supabase ──────────────────────────────────────────────
 const SUPABASE_URL = 'https://lmvlzqaifslugjyybmnx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxtdmx6cWFpZnNsdWdqeXlibW54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMzE3NjAsImV4cCI6MjA5MzYwNzc2MH0.5SftM-uTv_5TyYMB7l8RWZV6PmQZ-IArD2LyyBRIADo';
@@ -566,11 +598,15 @@ async function saveReservation() {
   try {
     if (editingId !== null) {
       await updateRow(editingId, { time, name, type });
+      await fetchAll();
+      const updated = reservations.find(r => r.id === editingId) || { day: pendingDay||0, time, name, type };
+      sendNotification('수정됨', updated);
     } else {
-      await insertRow({ year, month, day: pendingDay, time, name, type });
+      const inserted = await insertRow({ year, month, day: pendingDay, time, name, type });
+      await fetchAll();
+      sendNotification('추가됨', inserted || { day: pendingDay, time, name, type });
     }
     closeModal();
-    await fetchAll();
   } catch(e) {
     alert('저장 실패: ' + e.message);
     setSyncStatus('err');
@@ -583,7 +619,12 @@ async function deleteRes(e, id) {
   e.stopPropagation();
   if (!confirm('이 예약을 삭제하시겠습니까?')) return;
   setSyncStatus('ing');
-  try { await deleteRow(id); await fetchAll(); }
+  const target = reservations.find(r => r.id === id);
+  try {
+    await deleteRow(id);
+    await fetchAll();
+    if (target) sendNotification('삭제됨', target);
+  }
   catch(err) { alert('삭제 실패: ' + err.message); setSyncStatus('err'); }
 }
 
